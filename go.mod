@@ -1,4 +1,4 @@
-module github.com/RedstoneBlocks/go-start
+module github.com/Allan-Jacobs/go-start
 
 go 1.18
 
