@@ -1,4 +1,4 @@
-module github.com/Allan-Jacobs/go-start v0.1.0
+module github.com/Allan-Jacobs/go-start
 
 go 1.18
 
