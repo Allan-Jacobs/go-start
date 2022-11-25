@@ -36,6 +36,7 @@ func ConfirmAndThenActions(prompt string, actions ...Action) Action {
 						return err
 					}
 				}
+				break
 			} else if lower == "n" {
 				break
 			}
