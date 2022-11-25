@@ -8,11 +8,13 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-func CommandAction(name string, arg ...string) func() error {
+type Action = func() error
+
+func CommandAction(name string, arg ...string) Action {
 	return func() error { return exec.Command(name, arg...).Run() }
 }
 
-func ConfirmAndThenActions(prompt string, actions ...func() error) func() error {
+func ConfirmAndThenActions(prompt string, actions ...Action) Action {
 	return func() error {
 		for {
 			p := promptui.Prompt{
