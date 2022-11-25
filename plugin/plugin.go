@@ -18,8 +18,14 @@ type TemplateFeature struct {
 	name                string
 	description         string
 	templates           []template.Template
-	get_template_data   func() (any, error)
+	get_template_data   func(TemplateContext) (any, error)
 	availability_filter func() bool
+}
+
+type TemplateContext struct {
+	ProjectDir string
+	GoVersion  string
+	Config     Config
 }
 
 func (t TemplateFeature) String() string {

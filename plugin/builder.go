@@ -19,7 +19,7 @@ type TemplateFeatureBuilder struct {
 	name                string
 	description         string
 	templates           []template.Template
-	get_template_data   func() (any, error)
+	get_template_data   func(TemplateContext) (any, error)
 	availability_filter func() bool
 }
 
@@ -85,7 +85,7 @@ func (f *TemplateFeatureBuilder) WithDescription(description string) *TemplateFe
 	return f
 }
 
-func (f *TemplateFeatureBuilder) WithGetTemplateData(getter func() (any, error)) *TemplateFeatureBuilder {
+func (f *TemplateFeatureBuilder) WithGetTemplateData(getter func(TemplateContext) (any, error)) *TemplateFeatureBuilder {
 	f.get_template_data = getter
 	return f
 }

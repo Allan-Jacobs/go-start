@@ -2,6 +2,8 @@ package template_plugin
 
 import (
 	"errors"
+	"os/exec"
+	"path"
 	"regexp"
 	"strings"
 	"text/template"
@@ -11,31 +13,48 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-var r, _ = regexp.Compile(`^[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$`)
+var module_regexp = *regexp.MustCompile(`^[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$`)
+var version_regexp = *regexp.MustCompile(`go version go(?P<version>\d+\.\d+)\.\d+ (?:\w+)\/(?:\w+)`)
 var errInvalidModuleURL = errors.New("invalid module URL")
 
 var TemplatePlugin = plugin.Builder().
 	TemplateFeature().
 	WithName("default").
 	WithDescription("the default template").
-	WithGetTemplateData(func() (any, error) {
+	WithGetTemplateData(func(ctx plugin.TemplateContext) (any, error) {
+
+		name := path.Base(ctx.ProjectDir)
+
+		default_module_url := path.Join(ctx.Config.ModuleUrlBase, name)
+
 		prompt := promptui.Prompt{
 			Label: "Module URL",
 			Validate: func(s string) error {
-				if !r.MatchString(s) {
+				if !module_regexp.MatchString(s) {
 					return errInvalidModuleURL
 				}
 				return nil
 			},
+			Default: default_module_url,
 		}
 		module, err := prompt.Run()
 		if err != nil {
 			return nil, err
 		}
+
+		cmd := exec.Command("go", "version")
+		out, err := cmd.Output()
+		if err != nil {
+			return nil, err
+		}
+
+		matches := version_regexp.FindStringSubmatch(string(out))
+		go_version := matches[version_regexp.SubexpIndex("version")]
+
 		data := struct {
 			Version, Module string
 		}{
-			Version: "1.18",
+			Version: go_version,
 			Module:  module,
 		}
 		return data, nil
@@ -54,6 +73,6 @@ var TemplatePlugin = plugin.Builder().
 
 		go {{.Version}}
 		`), "\n")))).
-	WithAvailabilityFilter(func() bool { return true }).
+	WithAvailabilityFilter(plugin.HasExec("go")).
 	AddFeature().
 	Build()

@@ -16,7 +16,6 @@ func NewEngine(plugins ...Plugin) *Engine {
 }
 
 func (e *Engine) Run(dir string) error {
-
 	//templates
 	available_tf := make([]TemplateFeature, 0)
 
@@ -40,7 +39,17 @@ func (e *Engine) Run(dir string) error {
 
 	tf := available_tf[idx]
 
-	data, err := tf.get_template_data()
+	config, err := GetConfig()
+	if err != nil {
+		return err
+	}
+
+	ctx := TemplateContext{
+		ProjectDir: dir,
+		Config:     config,
+	}
+
+	data, err := tf.get_template_data(ctx)
 	if err != nil {
 		return err
 	}
