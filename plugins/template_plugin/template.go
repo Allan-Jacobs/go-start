@@ -74,5 +74,12 @@ var TemplatePlugin = plugin.Builder().
 		go {{.Version}}
 		`), "\n")))).
 	WithAvailabilityFilter(plugin.HasExec("go")).
+	WithEntryPoint(func(ctx plugin.TemplateContext) plugin.EntryPoint {
+		return plugin.EntryPoint{
+			Path:  "main.go",
+			Line:  4,
+			IsDir: false,
+		}
+	}).
 	AddFeature().
 	Build()
