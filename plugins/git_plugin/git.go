@@ -6,9 +6,9 @@ var Git = plugin.Builder().
 	PostGenerationFeature().
 	WithName("Initialize Git").
 	WithDescription("Initialize a git repository").
-	WithPostGenerationAction(
-		plugin.ConfirmAndThenActions("Initialize git repo", plugin.CommandAction("git", "init", "-q"), plugin.CommandAction("git", "add", ".")),
-	).
+	WithPostGenerationAction(func(ctx plugin.PostGenerationContext) error {
+		return plugin.ConfirmAndThenActions("Initialize git repo", plugin.CommandAction("git", "init", "-q"), plugin.CommandAction("git", "add", "."))()
+	}).
 	WithAvailabilityFilter(plugin.HasExec("git")).
 	AddFeature().
 	Build()

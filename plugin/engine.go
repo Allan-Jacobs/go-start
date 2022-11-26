@@ -83,11 +83,12 @@ func (e *Engine) Run(dir string) error {
 
 	}
 
+	context := PostGenerationContext{tf.entrypoint(ctx)}
 	// post generation
 	for _, p := range e.plugins {
 		for _, pgf := range p.PostGenerationFeatures() {
 			if pgf.availability_filter() {
-				if err := pgf.post_generation_action(); err != nil {
+				if err := pgf.post_generation_action(context); err != nil {
 					return err
 				}
 			}
