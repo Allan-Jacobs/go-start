@@ -10,7 +10,7 @@ type PostGenerationFeatureBuilder struct {
 	parent                 *PluginBuilder
 	name                   string
 	description            string
-	post_generation_action func() error
+	post_generation_action func(PostGenerationContext) error
 	availability_filter    func() bool
 }
 
@@ -21,6 +21,7 @@ type TemplateFeatureBuilder struct {
 	templates           []template.Template
 	get_template_data   func(TemplateContext) (any, error)
 	availability_filter func() bool
+	entrypoint          func(TemplateContext) EntryPoint
 }
 
 func Builder() *PluginBuilder {
@@ -47,7 +48,7 @@ func (f *PostGenerationFeatureBuilder) WithDescription(description string) *Post
 	return f
 }
 
-func (f *PostGenerationFeatureBuilder) WithPostGenerationAction(action func() error) *PostGenerationFeatureBuilder {
+func (f *PostGenerationFeatureBuilder) WithPostGenerationAction(action func(PostGenerationContext) error) *PostGenerationFeatureBuilder {
 	f.post_generation_action = action
 	return f
 }
@@ -95,8 +96,13 @@ func (f *TemplateFeatureBuilder) WithNewTemplate(templ template.Template) *Templ
 	return f
 }
 
-func (f *TemplateFeatureBuilder) WithAvailabilityFilter(filter func() bool) *TemplateFeatureBuilder {
+func (f *TemplateFeatureBuilder) WithAvailabilityFilter(filter Predicate) *TemplateFeatureBuilder {
 	f.availability_filter = filter
+	return f
+}
+
+func (f *TemplateFeatureBuilder) WithEntryPoint(entrypoint func(TemplateContext) EntryPoint) *TemplateFeatureBuilder {
+	f.entrypoint = entrypoint
 	return f
 }
 
@@ -107,6 +113,7 @@ func (f *TemplateFeatureBuilder) AddFeature() *PluginBuilder {
 		templates:           f.templates,
 		get_template_data:   f.get_template_data,
 		availability_filter: f.availability_filter,
+		entrypoint:          f.entrypoint,
 	})
 	return f.parent
 }

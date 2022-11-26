@@ -10,7 +10,7 @@ type FeatureType int
 type PostGenerationFeature struct {
 	name                   string
 	description            string
-	post_generation_action func() error
+	post_generation_action func(PostGenerationContext) error
 	availability_filter    func() bool
 }
 
@@ -20,12 +20,23 @@ type TemplateFeature struct {
 	templates           []template.Template
 	get_template_data   func(TemplateContext) (any, error)
 	availability_filter func() bool
+	entrypoint          func(TemplateContext) EntryPoint
+}
+
+type EntryPoint struct {
+	IsDir bool
+	Path  string
+	Line  int
 }
 
 type TemplateContext struct {
 	ProjectDir string
 	GoVersion  string
 	Config     Config
+}
+
+type PostGenerationContext struct {
+	EntryPoint EntryPoint
 }
 
 func (t TemplateFeature) String() string {
