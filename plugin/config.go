@@ -3,8 +3,8 @@ package plugin
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path"
 )
@@ -93,7 +93,7 @@ func GetConfig() (Config, error) {
 	}
 	defer file.Close()
 
-	bytes, err := ioutil.ReadAll(file)
+	bytes, err := io.ReadAll(file)
 	if err != nil {
 		return config, err
 	}
