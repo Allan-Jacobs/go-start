@@ -4,13 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/Allan-Jacobs/go-start/plugin"
 	"github.com/Allan-Jacobs/go-start/plugins/git_plugin"
 	"github.com/Allan-Jacobs/go-start/plugins/ide_plugin"
 	"github.com/Allan-Jacobs/go-start/plugins/template_plugin"
+	"github.com/lithammer/dedent"
 	"github.com/manifoldco/promptui"
 )
+
+const VERSION = "0.2.3"
 
 func main() {
 	engine := plugin.NewEngine(git_plugin.Git, ide_plugin.IdePlugin, template_plugin.TemplatePlugin)
@@ -18,6 +22,8 @@ func main() {
 	if len(os.Args) == 2 {
 		if os.Args[1] == "--config" {
 			interactive_config()
+		} else if os.Args[1] == "--version" || os.Args[1] == "-v" {
+			fmt.Println(VERSION)
 		} else {
 			var project_dir = os.Args[1]
 
@@ -26,8 +32,23 @@ func main() {
 				fmt.Println(err)
 			}
 		}
+	} else if len(os.Args) == 3 {
+		if os.Args[1] == "--config" || os.Args[2] == "--config" {
+			interactive_config()
+		} else if os.Args[1] == "--version" || os.Args[1] == "-v" || os.Args[2] == "--version" || os.Args[2] == "-v" {
+			fmt.Println(VERSION)
+		} else {
+			fmt.Println("unexpected arguments: ", os.Args[1:3])
+		}
 	} else {
-		fmt.Println("Usage: [project dir] or --config")
+		fmt.Println(strings.Trim(dedent.Dedent(`
+		Usage: <project dir> [flags]
+		flags:
+			--config
+				edit the config
+			--version | -v
+				print out the current version
+		`), "\n"))
 	}
 }
 
