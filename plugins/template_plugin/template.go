@@ -14,7 +14,7 @@ import (
 )
 
 var module_regexp = *regexp.MustCompile(`^[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$`)
-var version_regexp = *regexp.MustCompile(`go version go(?P<version>\d+\.\d+)\.\d+ (?:\w+)\/(?:\w+)`)
+var version_regexp = *regexp.MustCompile(`go version go(?P<version>\d+\.\d+)(?:\.\d+)? (?:\w+)\/(?:\w+)`)
 var errInvalidModuleURL = errors.New("invalid module URL")
 
 var TemplatePlugin = plugin.Builder().
